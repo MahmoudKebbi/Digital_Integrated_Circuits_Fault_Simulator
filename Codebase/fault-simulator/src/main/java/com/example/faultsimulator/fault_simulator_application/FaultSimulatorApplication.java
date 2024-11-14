@@ -1,8 +1,12 @@
-package com.example.faultsimulator.fault_simulator;
+package com.example.faultsimulator.fault_simulator_application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
+/*
+The Fault Simulator Application is an api where the user sends a
+ */
 @SpringBootApplication
 public class FaultSimulatorApplication {
 
