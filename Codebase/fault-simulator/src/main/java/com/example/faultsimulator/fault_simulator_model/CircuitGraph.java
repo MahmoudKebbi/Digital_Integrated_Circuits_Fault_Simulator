@@ -21,7 +21,7 @@ public class CircuitGraph {
         for (Gate gate : nodes.values()) {
             gate.evaluateOutput(gate.getInputs(), gate.getOutput());;
         }
-
+//        TODO we don't need prints this is just a place holder
         nodes.values().forEach(gate ->
                 System.out.println("Gate " + gate.getId() + " Output: " + gate.getOutput().getValue())
         );
