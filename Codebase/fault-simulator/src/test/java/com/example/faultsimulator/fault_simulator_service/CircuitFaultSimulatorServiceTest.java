@@ -7,13 +7,16 @@ class CircuitFaultSimulatorServiceTest {
 
     @Test
     void parseFile() {
+//        TODO
     }
 
     @Test
     void evaluateCircuit() {
+//        TODO
     }
 
     @Test
     void getCircuitGraph() {
+//        TODO
     }
 }
