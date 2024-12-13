@@ -12,7 +12,7 @@ public class NOTGate extends Gate{
     }
 
     @Override
-    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection outputValue) {
-//  TODO Write Method
+    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
+        output.setValue(!inputs.get(0).getValue());
     }
 }

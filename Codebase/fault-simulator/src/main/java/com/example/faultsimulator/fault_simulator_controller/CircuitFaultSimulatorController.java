@@ -14,8 +14,11 @@ import com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorS
 public class CircuitFaultSimulatorController {
 
 
-    public CircuitFaultSimulatorService circuitService;
-
+    private final CircuitFaultSimulatorService circuitService;
+    @Autowired
+    public CircuitFaultSimulatorController(CircuitFaultSimulatorService circuitService) {
+        this.circuitService = circuitService;
+    }
 
     // Endpoint to upload a file
     @PostMapping("/upload")

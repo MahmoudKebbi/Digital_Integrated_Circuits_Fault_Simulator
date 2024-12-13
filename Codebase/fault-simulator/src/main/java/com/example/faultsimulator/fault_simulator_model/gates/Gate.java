@@ -29,7 +29,6 @@ public abstract class Gate {
         return output;
     }
 
-
-    public abstract void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection outputValue);
+    public abstract void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output);
 }
 

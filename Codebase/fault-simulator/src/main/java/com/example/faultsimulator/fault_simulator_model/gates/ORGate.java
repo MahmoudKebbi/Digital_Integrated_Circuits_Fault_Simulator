@@ -12,7 +12,9 @@ public class ORGate extends Gate{
     }
 
     @Override
-    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection outputValue) {
-//  TODO Write Method
+    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
+        Boolean result = false;
+        for (CircuitConnection input : inputs) { result=result||input.getValue();}
+        output.setValue(result);
     }
 }

@@ -13,8 +13,10 @@ public class ANDGate extends Gate {
         }
 
     @Override
-    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection outputValue) {
-//  TODO Write Method
+    public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
+        Boolean result = true;
+        for (CircuitConnection input : inputs) { result=result&&input.getValue();}
+        output.setValue(result);
     }
 
 }

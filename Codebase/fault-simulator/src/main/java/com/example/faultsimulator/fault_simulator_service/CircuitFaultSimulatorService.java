@@ -40,12 +40,16 @@ public class CircuitFaultSimulatorService {
         // Handle input lines like "INPUT(1)"
         if (tokens[0].startsWith("INPUT")) {
             int inputId = Integer.parseInt(tokens[0].replaceAll("[^0-9]", ""));  // Remove non-numeric characters to get the pin ID
-            circuitGraph.addInput(new CircuitConnection(inputId)); // Add the input to the graph
+            CircuitConnection temp = new CircuitConnection(inputId);
+            circuitGraph.addConnection(temp); // Add the input to the graph
+            circuitGraph.addPrimaryInput(temp);
         }
         // Handle output lines like "OUTPUT(123)"
         else if (tokens[0].startsWith("OUTPUT")) {
             int outputId = Integer.parseInt(tokens[0].replaceAll("[^0-9]", "")); // Get the output ID
-            circuitGraph.addOutput(new CircuitConnection(outputId)); // Add the output to the graph
+            CircuitConnection temp = new CircuitConnection(outputId);
+            circuitGraph.addConnection(temp); // Add the output to the graph
+            circuitGraph.addPrimaryOutput(temp);
         }
         // Handle gate definitions (AND, OR, etc.)
         else if (tokens.length >= 3) {
@@ -66,6 +70,7 @@ public class CircuitFaultSimulatorService {
 
             // Create and add the gate to the circuit graph
             CircuitConnection outputConnection = new CircuitConnection(outputId);
+            circuitGraph.addConnection(outputConnection);
             Gate gate = createGate(gateId, gateType, inputs, outputConnection);
             circuitGraph.addGate(gate);
         }
@@ -92,8 +97,8 @@ public class CircuitFaultSimulatorService {
         }
     }
     // Method to evaluate the circuit (run the gates)
-    public void evaluateCircuit() {
-        circuitGraph.evaluate();
+    public void evaluateCircuit(List<Boolean> inputVales) throws Exception {
+        circuitGraph.evaluate(inputVales);
     }
 
     // Getter for the circuit graph (if needed for external usage)
