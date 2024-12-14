@@ -7,12 +7,12 @@ import java.util.*;
 
 public class CircuitGraph {
     private Map<Integer, Gate> nodes = new HashMap<>();
-    private Map<Integer, CircuitConnection> connections = new HashMap<>();
+    private List<CircuitConnection> connections;
     private List<CircuitConnection> PrimaryInputs;
     private List<CircuitConnection> PrimaryOutputs;
 
     public void addConnection(CircuitConnection connection) {
-        connections.put(connection.getId(), connection);
+        connections.add(connection);
     }
 
     public void addGate(Gate gate) {
@@ -43,5 +43,8 @@ public class CircuitGraph {
             index++;
         }
         //TODO will continue tomorrow and think about it a little
+    }
+    public void getPrimaryOutputs(){
+        System.out.println(PrimaryOutputs);
     }
 }
