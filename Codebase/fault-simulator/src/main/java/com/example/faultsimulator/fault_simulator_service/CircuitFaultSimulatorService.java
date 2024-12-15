@@ -35,10 +35,14 @@ public class CircuitFaultSimulatorService {
 
         if (line.startsWith("INPUT")) {
             int inputId = extractId(line);
-            circuitGraph.addPrimaryInput(new CircuitConnection(inputId));
+            CircuitConnection temp = new CircuitConnection(inputId);
+            circuitGraph.addPrimaryInput(temp);
+            circuitGraph.addCircuitConnection(temp);
         } else if (line.startsWith("OUTPUT")) {
             int outputId = extractId(line);
-            circuitGraph.addPrimaryOutput(new CircuitConnection(outputId));
+            CircuitConnection temp = new CircuitConnection(outputId);
+            circuitGraph.addPrimaryOutput(temp);
+            circuitGraph.addCircuitConnection(temp);
         } else if (line.contains("=")) {
             parseGateLine(line);
         } else {
@@ -58,10 +62,18 @@ public class CircuitFaultSimulatorService {
 
             List<CircuitConnection> inputs = new ArrayList<>();
             for (String id : inputIds) {
-                inputs.add(new CircuitConnection(Integer.parseInt(id.trim())));
+                if(circuitGraph.getCircuitConnections().containsKey(Integer.parseInt(id.trim()))){
+                    inputs.add(circuitGraph.getCircuitConnections().get(id));
+                }
+                else {
+                    CircuitConnection temp = new CircuitConnection(Integer.parseInt(id.trim()));
+                    circuitGraph.addCircuitConnection(temp);
+                    inputs.add(temp);
+                }
             }
 
             CircuitConnection output = new CircuitConnection(outputId);
+            circuitGraph.addCircuitConnection(output);
             circuitGraph.addGate(createGate(outputId, gateType, inputs, output));
         } catch (Exception e) {
             System.err.println("Error parsing gate line: " + line);

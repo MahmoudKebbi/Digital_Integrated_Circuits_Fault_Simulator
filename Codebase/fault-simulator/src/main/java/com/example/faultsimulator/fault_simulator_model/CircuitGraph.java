@@ -6,6 +6,7 @@ import java.util.*;
 
 public class CircuitGraph {
     private final Map<Integer, Gate> gates = new HashMap<>();
+    private final Map<Integer, CircuitConnection> circuitConnections = new HashMap<>();
     private final List<CircuitConnection> primaryInputs = new ArrayList<>();
     private final List<CircuitConnection> primaryOutputs = new ArrayList<>();
 
@@ -43,6 +44,17 @@ public class CircuitGraph {
     }
 
     /**
+     * Add a connection to the circuit graph, ensuring no duplicate gate IDs.
+     */
+    public boolean addCircuitConnection(CircuitConnection connection) {
+        if (!circuitConnections.containsKey(connection.getId())) {
+            circuitConnections.put(connection.getId(), connection);
+            return true;
+        }
+        else return false;
+    }
+
+    /**
      * Get the list of primary input connections.
      */
     public List<CircuitConnection> getPrimaryInputs() {
@@ -61,6 +73,13 @@ public class CircuitGraph {
      */
     public Map<Integer, Gate> getGates() {
         return gates;
+    }
+
+    /**
+     * Get the map of the connections in the circuit graph
+     */
+    public Map<Integer, CircuitConnection> getCircuitConnections() {
+        return circuitConnections;
     }
 
     /**
