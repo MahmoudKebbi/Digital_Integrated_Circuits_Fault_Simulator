@@ -5,68 +5,100 @@ import com.example.faultsimulator.fault_simulator_model.gates.*;
 import java.util.*;
 
 public class CircuitGraph {
-    private Map<Integer, Gate> nodes = new HashMap<>();
-    private List<CircuitConnection> connections = new ArrayList<>();
-    private List<CircuitConnection> PrimaryInputs = new ArrayList<>();
-    private List<CircuitConnection> PrimaryOutputs = new ArrayList<>();
+    private final Map<Integer, Gate> gates = new HashMap<>();
+    private final List<CircuitConnection> primaryInputs = new ArrayList<>();
+    private final List<CircuitConnection> primaryOutputs = new ArrayList<>();
 
-    public void addConnection(CircuitConnection connection) {
-        connections.add(connection);
-    }
-
-    public void addGate(Gate gate) {
-        nodes.put(gate.getId(), gate);
-    }
-
+    /**
+     * Add a primary input connection if it doesn't already exist.
+     */
     public void addPrimaryInput(CircuitConnection input) {
-        PrimaryInputs.add(input);
+        if (!primaryInputs.contains(input)) {
+            primaryInputs.add(input);
+        } else {
+            System.err.println("Duplicate primary input detected: " + input.getId());
+        }
     }
 
+    /**
+     * Add a primary output connection if it doesn't already exist.
+     */
     public void addPrimaryOutput(CircuitConnection output) {
-        PrimaryOutputs.add(output);
+        if (!primaryOutputs.contains(output)) {
+            primaryOutputs.add(output);
+        } else {
+            System.err.println("Duplicate primary output detected: " + output.getId());
+        }
     }
 
-    public Map<Integer, Gate> getGates() {
-        return nodes;
+    /**
+     * Add a gate to the circuit graph, ensuring no duplicate gate IDs.
+     */
+    public void addGate(Gate gate) {
+        if (gates.containsKey(gate.getId())) {
+            System.err.println("Duplicate Gate ID Detected: " + gate.getId());
+            return;
+        }
+        gates.put(gate.getId(), gate);
     }
 
+    /**
+     * Get the list of primary input connections.
+     */
     public List<CircuitConnection> getPrimaryInputs() {
-        return PrimaryInputs;
+        return primaryInputs;
     }
 
+    /**
+     * Get the list of primary output connections.
+     */
     public List<CircuitConnection> getPrimaryOutputs() {
-        return PrimaryOutputs;
+        return primaryOutputs;
     }
 
-    public void setPrimaryInputsValues(List<Boolean> primaryInputValues) throws Exception {
-        if (primaryInputValues.size() != PrimaryInputs.size()) {
-            throw new IllegalArgumentException("Mismatch: Number of inputs provided does not match the number of primary inputs in the circuit.");
-        }
-
-        for (int i = 0; i < PrimaryInputs.size(); i++) {
-            PrimaryInputs.get(i).setValue(primaryInputValues.get(i));
-        }
+    /**
+     * Get the map of gates in the circuit graph.
+     */
+    public Map<Integer, Gate> getGates() {
+        return gates;
     }
 
+    /**
+     * Evaluate the circuit using the provided input values.
+     */
     public void evaluate(List<Boolean> primaryInputValues) throws Exception {
-        setPrimaryInputsValues(primaryInputValues);
-        for (Gate gate : nodes.values()) {
+        if (primaryInputValues.size() != primaryInputs.size()) {
+            throw new IllegalArgumentException("Input values count does not match primary inputs.");
+        }
+
+        // Set values for primary inputs
+        for (int i = 0; i < primaryInputs.size(); i++) {
+            primaryInputs.get(i).setValue(primaryInputValues.get(i));
+        }
+
+        // Evaluate each gate in topological order
+        for (Gate gate : gates.values()) {
             gate.evaluateOutput(gate.getInputs(), gate.getOutput());
         }
     }
 
+    /**
+     * Get the list of primary output values.
+     */
     public List<Boolean> getPrimaryOutputsValues() {
         List<Boolean> outputValues = new ArrayList<>();
-        for (CircuitConnection output : PrimaryOutputs) {
+        for (CircuitConnection output : primaryOutputs) {
             outputValues.add(output.getValue());
         }
         return outputValues;
     }
 
-    public void printPrimaryOutputs() {
-        System.out.println("Primary Outputs:");
-        for (CircuitConnection output : PrimaryOutputs) {
-            System.out.println("Output " + output.getId() + ": " + output.getValue());
-        }
+    /**
+     * Print a summary of the circuit graph.
+     */
+    public void printSummary() {
+        System.out.println("Primary Inputs: " + primaryInputs.size());
+        System.out.println("Primary Outputs: " + primaryOutputs.size());
+        System.out.println("Total Gates: " + gates.size());
     }
 }

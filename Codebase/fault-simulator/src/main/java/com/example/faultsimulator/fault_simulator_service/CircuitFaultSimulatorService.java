@@ -9,41 +9,52 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CircuitFaultSimulatorService {
     private final CircuitGraph circuitGraph = new CircuitGraph();
 
+    /**
+     * Parses the uploaded benchmark file.
+     */
     public void parseFile(MultipartFile file) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                parseLine(line);
+                parseLine(line.trim());
             }
         }
+        validateParsedCircuit(); // Additional circuit validation
+        System.out.println("Parsing completed successfully.");
     }
 
     private void parseLine(String line) {
-        System.out.println("Parsing line: " + line);
-        line = line.split("#")[0].trim(); // Remove comments and trim spaces
+        line = line.split("#")[0].trim(); // Remove comments
         if (line.isEmpty()) return;
 
         if (line.startsWith("INPUT")) {
-            int inputId = Integer.parseInt(line.replaceAll("\\D+", ""));
-            CircuitConnection input = new CircuitConnection(inputId);
-            circuitGraph.addPrimaryInput(input);
+            int inputId = extractId(line);
+            circuitGraph.addPrimaryInput(new CircuitConnection(inputId));
         } else if (line.startsWith("OUTPUT")) {
-            int outputId = Integer.parseInt(line.replaceAll("\\D+", ""));
-            CircuitConnection output = new CircuitConnection(outputId);
-            circuitGraph.addPrimaryOutput(output);
+            int outputId = extractId(line);
+            circuitGraph.addPrimaryOutput(new CircuitConnection(outputId));
         } else if (line.contains("=")) {
+            parseGateLine(line);
+        } else {
+            throw new IllegalArgumentException("Invalid line format: " + line);
+        }
+    }
+
+    private void parseGateLine(String line) {
+        try {
             String[] parts = line.split("=");
             int outputId = Integer.parseInt(parts[0].trim());
-            String[] gateParts = parts[1].trim().split("\\(");
-            String gateType = gateParts[0];
-            String[] inputIds = gateParts[1].replace(")", "").split(",");
+
+            String gateInfo = parts[1].trim();
+            String gateType = gateInfo.substring(0, gateInfo.indexOf('(')).trim();
+            String[] inputIds = gateInfo.substring(gateInfo.indexOf('(') + 1, gateInfo.indexOf(')'))
+                    .split("\\s*,\\s*");
 
             List<CircuitConnection> inputs = new ArrayList<>();
             for (String id : inputIds) {
@@ -52,7 +63,14 @@ public class CircuitFaultSimulatorService {
 
             CircuitConnection output = new CircuitConnection(outputId);
             circuitGraph.addGate(createGate(outputId, gateType, inputs, output));
+        } catch (Exception e) {
+            System.err.println("Error parsing gate line: " + line);
+            e.printStackTrace();
         }
+    }
+
+    private int extractId(String line) {
+        return Integer.parseInt(line.replaceAll("\\D+", "")); // Extract digits
     }
 
     private Gate createGate(int id, String type, List<CircuitConnection> inputs, CircuitConnection output) {
@@ -68,8 +86,32 @@ public class CircuitFaultSimulatorService {
         };
     }
 
+    /**
+     * Evaluates the circuit using the provided input values.
+     */
     public void evaluateCircuit(List<Boolean> inputValues) throws Exception {
         circuitGraph.evaluate(inputValues);
+    }
+
+    /**
+     * Performs additional validation on the parsed circuit.
+     */
+    private void validateParsedCircuit() {
+        System.out.println("Validating parsed circuit...");
+        System.out.println("Primary Inputs: " + circuitGraph.getPrimaryInputs().size());
+        System.out.println("Primary Outputs: " + circuitGraph.getPrimaryOutputs().size());
+        System.out.println("Total Gates: " + circuitGraph.getGates().size());
+
+        // Check if the circuit graph has primary inputs, outputs, and gates
+        if (circuitGraph.getPrimaryInputs().isEmpty()) {
+            throw new IllegalStateException("No primary inputs found in the circuit.");
+        }
+        if (circuitGraph.getPrimaryOutputs().isEmpty()) {
+            throw new IllegalStateException("No primary outputs found in the circuit.");
+        }
+        if (circuitGraph.getGates().isEmpty()) {
+            throw new IllegalStateException("No gates found in the circuit.");
+        }
     }
 
     public CircuitGraph getCircuitGraph() {
