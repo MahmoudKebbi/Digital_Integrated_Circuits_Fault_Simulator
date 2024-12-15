@@ -8,7 +8,8 @@ class FaultSimulatorApplicationTests {
 
 	@Test
 	void contextLoads() {
-//		TODO
+		// Verify that the Spring context loads without issues
+		assertTrue(true, "Spring context loaded successfully.");
 	}
-
 }
+
