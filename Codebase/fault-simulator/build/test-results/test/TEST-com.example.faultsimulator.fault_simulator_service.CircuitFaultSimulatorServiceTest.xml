@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-12-13T21:50:16" hostname="SAM" time="0.002">
+<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-15T16:41:26" hostname="SAM" time="0.029">
   <properties/>
-  <testcase name="getCircuitGraph()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.0"/>
-  <testcase name="evaluateCircuit()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.001"/>
-  <testcase name="parseFile()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="parseFile()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.029"/>
+  <system-out><![CDATA[INPUT(1)
+INPUT(2)
+OUTPUT(3)
+3
+=
+AND(1, 2)
+Inputs Size correct
+Outputs Size correct
+Gates Size correct
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

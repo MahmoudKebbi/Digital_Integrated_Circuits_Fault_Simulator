@@ -4,6 +4,7 @@ import com.example.faultsimulator.fault_simulator_model.CircuitConnection;
 import com.example.faultsimulator.fault_simulator_model.CircuitGraph;
 import com.example.faultsimulator.fault_simulator_model.gates.ANDGate;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +34,11 @@ class CircuitFaultSimulatorServiceTest {
         // Verify circuit graph structure
         CircuitGraph circuitGraph = service.getCircuitGraph();
         assertEquals(2, circuitGraph.getPrimaryInputs().size(), "There should be 2 primary inputs.");
+        System.out.println("Inputs Size correct");
         assertEquals(1, circuitGraph.getPrimaryOutputs().size(), "There should be 1 primary output.");
-        assertEquals(1, circuitGraph.getGates().size(), "There should be 1 gate.");
+        System.out.println("Outputs Size correct");
+        assertEquals(1, circuitGraph.getNodes().size(), "There should be 1 gate.");
+        System.out.println("Gates Size correct");
     }
 
 

@@ -23,10 +23,8 @@ public class CircuitFaultSimulatorService {
 
     private void parseLine(String line) {
         // Remove everything after and including '#' character (handle inline comments)
+        trimForComment(line);
         int commentIndex = line.indexOf("#");
-        if (commentIndex != -1) {
-            line = line.substring(0, commentIndex).trim();  // Get everything before the '#', and trim any extra whitespace
-        }
 
         // Skip the line if it's empty after removing the comment
         if (line.isEmpty()) {
@@ -34,7 +32,7 @@ public class CircuitFaultSimulatorService {
         }
 
         // Now proceed with splitting the line by whitespace and processing it
-        String[] tokens = line.split("\\s+");
+        String[] tokens = splitLineToTokens(line);
         if (tokens.length == 0) return;
 
         // Handle input lines like "INPUT(1)"
@@ -53,7 +51,7 @@ public class CircuitFaultSimulatorService {
         }
         // Handle gate definitions (AND, OR, etc.)
         else if (tokens.length >= 3) {
-            String gateType = tokens[1].toUpperCase();  // Gate type is the second token (AND, OR, etc.)
+            String gateType = tokens[2].toUpperCase().substring(0,tokens[2].indexOf('('));  // Gate type is the second token (AND, OR, etc.)
             int gateId = Integer.parseInt(tokens[0]);   // First token is the gate ID
 
             // Extract the output ID (e.g., "123" in "123 = AND(1,2)")
@@ -104,5 +102,15 @@ public class CircuitFaultSimulatorService {
     // Getter for the circuit graph (if needed for external usage)
     public CircuitGraph getCircuitGraph() {
         return circuitGraph;
+    }
+    public void trimForComment(String line){
+        // Remove everything after and including '#' character (handle inline comments)
+        int commentIndex = line.indexOf("#");
+        if (commentIndex != -1) {
+            line = line.substring(0, commentIndex).trim();  // Get everything before the '#', and trim any extra whitespace
+        }
+    }
+    public String[] splitLineToTokens(String line) {
+        return line.split("(?<!,)\\s+");
     }
 }

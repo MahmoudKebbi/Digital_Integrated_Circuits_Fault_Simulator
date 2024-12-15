@@ -43,6 +43,37 @@ public class CircuitGraph {
         }
     }
 
+    public Map<Integer, Gate> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Map<Integer, Gate> nodes) {
+        this.nodes = nodes;
+    }
+
+    public List<CircuitConnection> getConnections() {
+        return connections;
+    }
+
+    public void setConnections(List<CircuitConnection> connections) {
+        this.connections = connections;
+    }
+
+    public List<CircuitConnection> getPrimaryInputs() {
+        return PrimaryInputs;
+    }
+
+    public void setPrimaryInputs(List<CircuitConnection> primaryInputs) {
+        PrimaryInputs = primaryInputs;
+    }
+
+    public List<CircuitConnection> getPrimaryOutputs() {
+        return PrimaryOutputs;
+    }
+
+    public void setPrimaryOutputs(List<CircuitConnection> primaryOutputs) {
+        PrimaryOutputs = primaryOutputs;
+    }
 
     public void evaluate(List<Boolean> primaryInputValues) throws Exception {
         // Step 1: Set the primary input values
