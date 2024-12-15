@@ -22,17 +22,22 @@ public class CircuitGraph {
         PrimaryInputs.add(input);
     }
 
-
     public void addPrimaryOutput(CircuitConnection output) {
         PrimaryOutputs.add(output);
     }
 
-    /**
-     * Sets the values of the primary inputs based on a provided list of booleans.
-     *
-     * @param primaryInputValues The list of boolean values representing the primary inputs.
-     * @throws Exception If the input size does not match the number of primary inputs.
-     */
+    public Map<Integer, Gate> getGates() {
+        return nodes;
+    }
+
+    public List<CircuitConnection> getPrimaryInputs() {
+        return PrimaryInputs;
+    }
+
+    public List<CircuitConnection> getPrimaryOutputs() {
+        return PrimaryOutputs;
+    }
+
     public void setPrimaryInputsValues(List<Boolean> primaryInputValues) throws Exception {
         if (primaryInputValues.size() != PrimaryInputs.size()) {
             throw new IllegalArgumentException("Mismatch: Number of inputs provided does not match the number of primary inputs in the circuit.");
@@ -43,22 +48,13 @@ public class CircuitGraph {
         }
     }
 
-
     public void evaluate(List<Boolean> primaryInputValues) throws Exception {
-        // Step 1: Set the primary input values
         setPrimaryInputsValues(primaryInputValues);
-
-        // Step 2: Evaluate each gate in the circuit
         for (Gate gate : nodes.values()) {
             gate.evaluateOutput(gate.getInputs(), gate.getOutput());
         }
     }
 
-    /**
-     * Retrieves the values of the primary outputs after circuit evaluation.
-     *
-     * @return A list of boolean values representing the primary outputs.
-     */
     public List<Boolean> getPrimaryOutputsValues() {
         List<Boolean> outputValues = new ArrayList<>();
         for (CircuitConnection output : PrimaryOutputs) {

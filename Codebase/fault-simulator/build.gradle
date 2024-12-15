@@ -3,6 +3,16 @@ plugins {
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
 }
+sourceSets {
+	main {
+		resources {
+			srcDirs = ['src/main/resources'] // Resources should be in the correct path
+		}
+	}
+}
+
+
+
 
 group = 'com.example.faultsimulator'
 version = '0.0.1-SNAPSHOT'

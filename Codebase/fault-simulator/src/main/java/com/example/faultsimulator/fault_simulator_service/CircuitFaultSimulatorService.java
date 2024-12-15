@@ -5,12 +5,16 @@ import com.example.faultsimulator.fault_simulator_model.CircuitGraph;
 import com.example.faultsimulator.fault_simulator_model.gates.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.*;
-import java.util.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CircuitFaultSimulatorService {
-    private CircuitGraph circuitGraph = new CircuitGraph();
+    private final CircuitGraph circuitGraph = new CircuitGraph();
 
     public void parseFile(MultipartFile file) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
@@ -22,86 +26,52 @@ public class CircuitFaultSimulatorService {
     }
 
     private void parseLine(String line) {
-        // Remove everything after and including '#' character (handle inline comments)
-        int commentIndex = line.indexOf("#");
-        if (commentIndex != -1) {
-            line = line.substring(0, commentIndex).trim();  // Get everything before the '#', and trim any extra whitespace
-        }
+        System.out.println("Parsing line: " + line);
+        line = line.split("#")[0].trim(); // Remove comments and trim spaces
+        if (line.isEmpty()) return;
 
-        // Skip the line if it's empty after removing the comment
-        if (line.isEmpty()) {
-            return;
-        }
-
-        // Now proceed with splitting the line by whitespace and processing it
-        String[] tokens = line.split("\\s+");
-        if (tokens.length == 0) return;
-
-        // Handle input lines like "INPUT(1)"
-        if (tokens[0].startsWith("INPUT")) {
-            int inputId = Integer.parseInt(tokens[0].replaceAll("[^0-9]", ""));  // Remove non-numeric characters to get the pin ID
-            CircuitConnection temp = new CircuitConnection(inputId);
-            circuitGraph.addConnection(temp); // Add the input to the graph
-            circuitGraph.addPrimaryInput(temp);
-        }
-        // Handle output lines like "OUTPUT(123)"
-        else if (tokens[0].startsWith("OUTPUT")) {
-            int outputId = Integer.parseInt(tokens[0].replaceAll("[^0-9]", "")); // Get the output ID
-            CircuitConnection temp = new CircuitConnection(outputId);
-            circuitGraph.addConnection(temp); // Add the output to the graph
-            circuitGraph.addPrimaryOutput(temp);
-        }
-        // Handle gate definitions (AND, OR, etc.)
-        else if (tokens.length >= 3) {
-            String gateType = tokens[1].toUpperCase();  // Gate type is the second token (AND, OR, etc.)
-            int gateId = Integer.parseInt(tokens[0]);   // First token is the gate ID
-
-            // Extract the output ID (e.g., "123" in "123 = AND(1,2)")
-            int outputId = gateId; // Assuming the output ID is the same as the gate ID
+        if (line.startsWith("INPUT")) {
+            int inputId = Integer.parseInt(line.replaceAll("\\D+", ""));
+            CircuitConnection input = new CircuitConnection(inputId);
+            circuitGraph.addPrimaryInput(input);
+        } else if (line.startsWith("OUTPUT")) {
+            int outputId = Integer.parseInt(line.replaceAll("\\D+", ""));
+            CircuitConnection output = new CircuitConnection(outputId);
+            circuitGraph.addPrimaryOutput(output);
+        } else if (line.contains("=")) {
+            String[] parts = line.split("=");
+            int outputId = Integer.parseInt(parts[0].trim());
+            String[] gateParts = parts[1].trim().split("\\(");
+            String gateType = gateParts[0];
+            String[] inputIds = gateParts[1].replace(")", "").split(",");
 
             List<CircuitConnection> inputs = new ArrayList<>();
-
-            // Parse the inputs from the gate definition (e.g., AND(1, 2))
-            String[] inputTokens = tokens[2].substring(tokens[2].indexOf('(') + 1, tokens[2].indexOf(')')).split(",");
-            for (String inputToken : inputTokens) {
-                int inputId = Integer.parseInt(inputToken.trim());
-                inputs.add(new CircuitConnection(inputId));  // Add input connections to the gate
+            for (String id : inputIds) {
+                inputs.add(new CircuitConnection(Integer.parseInt(id.trim())));
             }
 
-            // Create and add the gate to the circuit graph
-            CircuitConnection outputConnection = new CircuitConnection(outputId);
-            circuitGraph.addConnection(outputConnection);
-            Gate gate = createGate(gateId, gateType, inputs, outputConnection);
-            circuitGraph.addGate(gate);
+            CircuitConnection output = new CircuitConnection(outputId);
+            circuitGraph.addGate(createGate(outputId, gateType, inputs, output));
         }
     }
 
-    private Gate createGate(int gateId, String gateType, List<CircuitConnection> inputs,CircuitConnection output) {
-        switch (gateType) {
-            case "AND":
-                return new ANDGate(gateId, inputs, output);
-            case "OR":
-                return new ORGate(gateId, inputs, output);
-            case "NAND":
-                return new NANDGate(gateId, inputs, output);
-            case "NOR":
-                return new NORGate(gateId, inputs, output);
-            case "XOR":
-                return new XORGate(gateId, inputs, output);
-            case "NOT":
-                return new NOTGate(gateId, inputs, output);
-            case "BUFF":
-                return new BUFFGate(gateId, inputs, output);  // Buffer gate if defined
-            default:
-                throw new IllegalArgumentException("Unsupported gate type: " + gateType);
-        }
-    }
-    // Method to evaluate the circuit (run the gates)
-    public void evaluateCircuit(List<Boolean> inputVales) throws Exception {
-        circuitGraph.evaluate(inputVales);
+    private Gate createGate(int id, String type, List<CircuitConnection> inputs, CircuitConnection output) {
+        return switch (type.toUpperCase()) {
+            case "AND" -> new ANDGate(id, inputs, output);
+            case "NAND" -> new NANDGate(id, inputs, output);
+            case "OR" -> new ORGate(id, inputs, output);
+            case "NOR" -> new NORGate(id, inputs, output);
+            case "XOR" -> new XORGate(id, inputs, output);
+            case "NOT" -> new NOTGate(id, inputs, output);
+            case "BUFF" -> new BUFFGate(id, inputs, output);
+            default -> throw new IllegalArgumentException("Unknown gate type: " + type);
+        };
     }
 
-    // Getter for the circuit graph (if needed for external usage)
+    public void evaluateCircuit(List<Boolean> inputValues) throws Exception {
+        circuitGraph.evaluate(inputValues);
+    }
+
     public CircuitGraph getCircuitGraph() {
         return circuitGraph;
     }
