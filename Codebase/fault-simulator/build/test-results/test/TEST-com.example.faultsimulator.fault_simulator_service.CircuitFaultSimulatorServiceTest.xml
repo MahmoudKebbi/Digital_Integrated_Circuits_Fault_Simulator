@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-12-15T20:19:24" hostname="SAM" time="0.022">
+<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-12-15T21:46:06" hostname="SAM" time="0.024">
   <properties/>
-  <testcase name="evaluateCircuit()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.01"/>
-  <testcase name="parseFile()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.003"/>
+  <testcase name="evaluateCircuit()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.009"/>
+  <testcase name="parseFile()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.002"/>
   <testcase name="parseC432File()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.005"/>
-  <testcase name="evaluateC432Circuit()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.003"/>
-  <system-out><![CDATA[Validating parsed circuit...
+  <testcase name="evaluateC432Circuit()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.005"/>
+  <system-out><![CDATA[true
+false
+Validating parsed circuit...
 Primary Inputs: 5
 Primary Outputs: 2
 Total Gates: 6
@@ -23,6 +25,42 @@ Primary Inputs: 36
 Primary Outputs: 7
 Total Gates: 160
 Parsing completed successfully.
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
+true
+false
 C432 Circuit Outputs: [false, false, false, false, false, false, false]
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>

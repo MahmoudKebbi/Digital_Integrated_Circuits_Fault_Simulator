@@ -93,6 +93,8 @@ public class CircuitGraph {
         // Set values for primary inputs
         for (int i = 0; i < primaryInputs.size(); i++) {
             primaryInputs.get(i).setValue(primaryInputValues.get(i));
+            boolean b =primaryInputs.get(i).getValue();
+            System.out.println(b);
         }
 
         // Evaluate each gate in topological order

@@ -14,7 +14,6 @@ import java.util.*;
 @Service
 public class CircuitFaultSimulatorService {
     private final CircuitGraph circuitGraph = new CircuitGraph();
-
     /**
      * Parses the uploaded benchmark file.
      */
@@ -61,9 +60,12 @@ public class CircuitFaultSimulatorService {
                     .split("\\s*,\\s*");
 
             List<CircuitConnection> inputs = new ArrayList<>();
+
             for (String id : inputIds) {
+
                 if(circuitGraph.getCircuitConnections().containsKey(Integer.parseInt(id.trim()))){
-                    inputs.add(circuitGraph.getCircuitConnections().get(id));
+                    CircuitConnection temp2= circuitGraph.getCircuitConnections().get(Integer.parseInt(id.trim()));
+                    inputs.add(temp2);
                 }
                 else {
                     CircuitConnection temp = new CircuitConnection(Integer.parseInt(id.trim()));
