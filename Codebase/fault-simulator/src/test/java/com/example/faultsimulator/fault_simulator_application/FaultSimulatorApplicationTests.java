@@ -9,8 +9,11 @@ class FaultSimulatorApplicationTests {
 
 	@Test
 	void contextLoads() {
-		// Verify that the Spring context loads without issues
-		assertTrue(true, "Spring context loaded successfully.");
-	}
-}
+
+				FaultSimulatorApplication.main(new String[] {});  // Start the application
+				// Optionally, add assertions to check if certain beans are initialized
+				assertTrue(true, "Application started successfully.");
+			}
+		}
+
 
