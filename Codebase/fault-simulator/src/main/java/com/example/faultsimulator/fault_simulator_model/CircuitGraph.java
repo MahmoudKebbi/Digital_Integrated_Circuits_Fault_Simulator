@@ -1,6 +1,6 @@
 package com.example.faultsimulator.fault_simulator_model;
 
-import com.example.faultsimulator.fault_simulator_model.gates.*;
+import com.example.faultsimulator.fault_simulator_model.gates.Gate;
 
 import java.util.*;
 
@@ -50,8 +50,9 @@ public class CircuitGraph {
         if (!circuitConnections.containsKey(connection.getId())) {
             circuitConnections.put(connection.getId(), connection);
             return true;
+        } else {
+            return false;
         }
-        else return false;
     }
 
     /**
@@ -76,7 +77,7 @@ public class CircuitGraph {
     }
 
     /**
-     * Get the map of the connections in the circuit graph
+     * Get the map of the connections in the circuit graph.
      */
     public Map<Integer, CircuitConnection> getCircuitConnections() {
         return circuitConnections;
@@ -93,11 +94,10 @@ public class CircuitGraph {
         // Set values for primary inputs
         for (int i = 0; i < primaryInputs.size(); i++) {
             primaryInputs.get(i).setValue(primaryInputValues.get(i));
-            boolean b =primaryInputs.get(i).getValue();
-            System.out.println(b);
+            System.out.println("Input " + primaryInputs.get(i).getId() + " = " + primaryInputs.get(i).getValue());
         }
 
-        // Evaluate each gate in topological order
+        // Evaluate each gate
         for (Gate gate : gates.values()) {
             gate.evaluateOutput(gate.getInputs(), gate.getOutput());
         }

@@ -13,7 +13,69 @@ import java.util.*;
 
 @Service
 public class CircuitFaultSimulatorService {
+
     private final CircuitGraph circuitGraph = new CircuitGraph();
+
+    /**
+     * Generates a list of stuck-at faults for all connections in the circuit.
+     */
+    public List<Fault> generateFaultList() {
+        List<Fault> faultList = new ArrayList<>();
+
+        for (CircuitConnection connection : circuitGraph.getCircuitConnections().values()) {
+            faultList.add(new Fault(connection.getId(), false)); // Stuck-at-0
+            faultList.add(new Fault(connection.getId(), true));  // Stuck-at-1
+        }
+
+        return faultList;
+    }
+
+    /**
+     * Evaluates the circuit without faults using a given test vector.
+     */
+    public List<Boolean> evaluateFaultFreeCircuit(List<Boolean> inputValues) throws Exception {
+        // Reset all stuck faults
+        for (CircuitConnection connection : circuitGraph.getCircuitConnections().values()) {
+            connection.setStuck(false, false);
+        }
+
+        circuitGraph.evaluate(inputValues);
+        return circuitGraph.getPrimaryOutputsValues();
+    }
+
+    /**
+     * Runs fault simulation by injecting faults and comparing results to the fault-free circuit.
+     */
+    public Map<String, List<Boolean>> runFaultSimulation(List<Boolean> testVector) throws Exception {
+        Map<String, List<Boolean>> faultResults = new HashMap<>();
+
+        // Step 1: Evaluate fault-free circuit
+        List<Boolean> goldenOutputs = evaluateFaultFreeCircuit(testVector);
+
+        // Step 2: Inject faults and evaluate for each connection
+        for (CircuitConnection connection : circuitGraph.getCircuitConnections().values()) {
+            for (boolean stuckAtValue : Arrays.asList(true, false)) {
+                // Inject fault
+                connection.setStuck(true, stuckAtValue);
+                System.out.println("Injecting fault at Node: " + connection.getId() + ", Fault Value: " + stuckAtValue);
+
+                // Evaluate circuit with fault
+                circuitGraph.evaluate(testVector);
+                List<Boolean> faultyOutputs = circuitGraph.getPrimaryOutputsValues();
+
+                // Store results
+                String faultKey = "Node " + connection.getId() + "_StuckAt" + (stuckAtValue ? "1" : "0");
+                faultResults.put(faultKey, new ArrayList<>(faultyOutputs));
+
+                // Clear fault
+                connection.setStuck(false, false);
+            }
+        }
+
+        // Return fault results
+        return faultResults;
+    }
+
     /**
      * Parses the uploaded benchmark file.
      */
@@ -56,26 +118,18 @@ public class CircuitFaultSimulatorService {
 
             String gateInfo = parts[1].trim();
             String gateType = gateInfo.substring(0, gateInfo.indexOf('(')).trim();
-            String[] inputIds = gateInfo.substring(gateInfo.indexOf('(') + 1, gateInfo.indexOf(')'))
-                    .split("\\s*,\\s*");
+            String[] inputIds = gateInfo.substring(gateInfo.indexOf('(') + 1, gateInfo.indexOf(')')).split("\\s*,\\s*");
 
             List<CircuitConnection> inputs = new ArrayList<>();
-
             for (String id : inputIds) {
-
-                if(circuitGraph.getCircuitConnections().containsKey(Integer.parseInt(id.trim()))){
-                    CircuitConnection temp2= circuitGraph.getCircuitConnections().get(Integer.parseInt(id.trim()));
-                    inputs.add(temp2);
-                }
-                else {
-                    CircuitConnection temp = new CircuitConnection(Integer.parseInt(id.trim()));
-                    circuitGraph.addCircuitConnection(temp);
-                    inputs.add(temp);
-                }
+                CircuitConnection connection = circuitGraph.getCircuitConnections()
+                        .computeIfAbsent(Integer.parseInt(id.trim()), CircuitConnection::new);
+                inputs.add(connection);
             }
 
-            CircuitConnection output = new CircuitConnection(outputId);
-            circuitGraph.addCircuitConnection(output);
+            CircuitConnection output = circuitGraph.getCircuitConnections()
+                    .computeIfAbsent(outputId, CircuitConnection::new);
+
             circuitGraph.addGate(createGate(outputId, gateType, inputs, output));
         } catch (Exception e) {
             System.err.println("Error parsing gate line: " + line);
@@ -84,7 +138,7 @@ public class CircuitFaultSimulatorService {
     }
 
     private int extractId(String line) {
-        return Integer.parseInt(line.replaceAll("\\D+", "")); // Extract digits
+        return Integer.parseInt(line.replaceAll("\\D+", ""));
     }
 
     private Gate createGate(int id, String type, List<CircuitConnection> inputs, CircuitConnection output) {
@@ -101,22 +155,9 @@ public class CircuitFaultSimulatorService {
     }
 
     /**
-     * Evaluates the circuit using the provided input values.
-     */
-    public void evaluateCircuit(List<Boolean> inputValues) throws Exception {
-        circuitGraph.evaluate(inputValues);
-    }
-
-    /**
-     * Performs additional validation on the parsed circuit.
+     * Validates the parsed circuit.
      */
     private void validateParsedCircuit() {
-        System.out.println("Validating parsed circuit...");
-        System.out.println("Primary Inputs: " + circuitGraph.getPrimaryInputs().size());
-        System.out.println("Primary Outputs: " + circuitGraph.getPrimaryOutputs().size());
-        System.out.println("Total Gates: " + circuitGraph.getGates().size());
-
-        // Check if the circuit graph has primary inputs, outputs, and gates
         if (circuitGraph.getPrimaryInputs().isEmpty()) {
             throw new IllegalStateException("No primary inputs found in the circuit.");
         }
@@ -130,5 +171,31 @@ public class CircuitFaultSimulatorService {
 
     public CircuitGraph getCircuitGraph() {
         return circuitGraph;
+    }
+
+    /**
+     * Inner class to represent a fault.
+     */
+    public static class Fault {
+        private final int nodeId;
+        private final boolean stuckValue;
+
+        public Fault(int nodeId, boolean stuckValue) {
+            this.nodeId = nodeId;
+            this.stuckValue = stuckValue;
+        }
+
+        public int getNodeId() {
+            return nodeId;
+        }
+
+        public boolean getStuckValue() {
+            return stuckValue;
+        }
+
+        @Override
+        public String toString() {
+            return "Fault{Node ID=" + nodeId + ", Stuck Value=" + stuckValue + "}";
+        }
     }
 }
