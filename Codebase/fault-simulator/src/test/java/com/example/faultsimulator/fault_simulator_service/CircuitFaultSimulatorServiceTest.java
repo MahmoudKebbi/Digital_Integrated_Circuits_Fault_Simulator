@@ -55,13 +55,13 @@ class CircuitFaultSimulatorServiceTest {
     }
 
     @Test
-    void testRunFaultSimulation() throws Exception {
+    void testRunSerialFaultSimulation() throws Exception {
         // Step 1: Initialize the service with a valid circuit netlist
         CircuitFaultSimulatorService service = initializeService("c17.bench.txt");
 
         // Step 2: Run fault simulation
         System.out.println("Running fault simulation for c17...");
-        Map<String, List<Boolean>> faultResults = service.runFaultSimulation();
+        Map<String, List<Boolean>> faultResults = service.runSerialFaultSimulation();
 
         // Step 3: Assertions
         assertNotNull(faultResults, "Fault results should not be null");
@@ -84,6 +84,38 @@ class CircuitFaultSimulatorServiceTest {
 
         // Add breakpoint here to validate fault coverage and outputs
     }
+
+    @Test
+    void testRunParallelFaultSimulation() throws Exception {
+        // Step 1: Initialize the service with a valid circuit netlist
+        CircuitFaultSimulatorService service = initializeService("c17.bench.txt");
+
+        // Step 2: Run fault simulation
+        System.out.println("Running fault simulation for c17...");
+        Map<String, List<Boolean>> faultResults = service.runParallelFaultSimulation();
+
+        // Step 3: Assertions
+        assertNotNull(faultResults, "Fault results should not be null");
+        assertFalse(faultResults.isEmpty(), "Fault results should not be empty");
+
+        // Print detected faults and results
+        System.out.println("Detected Faults and Outputs:");
+        faultResults.forEach((fault, outputs) -> {
+            System.out.println(fault + " -> Outputs: " + outputs);
+        });
+
+        // Add breakpoints here to inspect variables
+        System.out.println("Fault Simulation Completed.");
+
+        // Optional: Additional Assertions
+        // Verify the size of detected faults
+        int totalFaults = 2 * service.getCircuitGraph().getCircuitConnections().size(); // 2 faults (StuckAt0, StuckAt1) per connection
+        int detectedFaults = faultResults.size();
+        assertTrue(detectedFaults <= totalFaults, "Number of detected faults should not exceed total faults");
+
+        // Add breakpoint here to validate fault coverage and outputs
+    }
+
     @Test
     void evaluateCircuit() throws Exception {
         CircuitFaultSimulatorService service = new CircuitFaultSimulatorService();

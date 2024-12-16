@@ -10,6 +10,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class CircuitFaultSimulatorService {
@@ -56,8 +60,7 @@ public class CircuitFaultSimulatorService {
      * Runs fault simulation by injecting faults and comparing results to the fault-free circuit.
      */
 
-
-    public Map<String, List<Boolean>> runFaultSimulation() throws Exception {
+    public Map<String, List<Boolean>> runSerialFaultSimulation() throws Exception {
         // List to store undetectable faults
         List<Fault> undetectableFaults = new ArrayList<>();
         int detectedFaultsCount = 0;
@@ -136,6 +139,101 @@ public class CircuitFaultSimulatorService {
         return faultResults;
     }
 
+    /**
+     * Runs fault simulation by injecting faults in parallel using Java Multithreading and comparing results to the fault-free circuit.
+     */
+    public Map<String, List<Boolean>> runParallelFaultSimulation() throws Exception {
+        // List to store undetectable faults
+        List<Fault> undetectableFaults = Collections.synchronizedList(new ArrayList<>());
+        AtomicInteger detectedFaultsCount = new AtomicInteger(0);
+
+        // Generate all possible test vectors
+        int primaryInputSize = circuitGraph.getPrimaryInputs().size();
+        List<List<Boolean>> testVectors = generateAllTestVectors(primaryInputSize);
+
+        // Generate all possible faults
+        List<Fault> faultList = generateFaultList();
+
+        // Map to store results for each fault
+        Map<String, List<Boolean>> faultResults = Collections.synchronizedMap(new HashMap<>());
+
+        // Start timer
+        long startTime = System.currentTimeMillis();
+
+        // Create a thread pool
+        int numThreads = Runtime.getRuntime().availableProcessors(); // Use available CPU cores
+        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+
+        // Submit tasks for parallel execution
+        for (Fault fault : faultList) {
+            executor.submit(() -> {
+                boolean faultDetected = false;
+
+                try {
+                    // Iterate over all test vectors
+                    for (List<Boolean> testVector : testVectors) {
+                        // Step 1: Simulate fault-free circuit
+                        List<Boolean> faultFreeOutputs = evaluateFaultFreeCircuit(testVector);
+
+                        // Step 2: Inject the fault
+                        CircuitConnection connection = circuitGraph.getCircuitConnections().get(fault.getNodeId());
+                        if (connection != null) {
+                            connection.setStuck(true, fault.getStuckValue());
+                        } else {
+                            throw new IllegalArgumentException("Invalid fault node ID: " + fault.getNodeId());
+                        }
+
+                        // Step 3: Simulate faulty circuit
+                        circuitGraph.evaluate(testVector);
+                        List<Boolean> faultyOutputs = circuitGraph.getPrimaryOutputsValues();
+
+                        // Step 4: Compare fault-free and faulty outputs
+                        if (!faultFreeOutputs.equals(faultyOutputs)) {
+                            faultDetected = true;
+                            detectedFaultsCount.incrementAndGet();
+
+                            // Store the result for this fault
+                            String faultKey = "Node " + fault.getNodeId() + "_StuckAt" + (fault.getStuckValue() ? "1" : "0");
+                            faultResults.put(faultKey, faultyOutputs);
+
+                            break; // Stop testing this fault as it is detected
+                        }
+
+                        // Clear the fault for the next test
+                        connection.setStuck(false, false);
+                    }
+
+                    // If fault was not detected by any test vector, add it to undetectable faults
+                    if (!faultDetected) {
+                        undetectableFaults.add(fault);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // Handle any unexpected exceptions
+                }
+            });
+        }
+
+        // Shutdown executor and wait for all tasks to finish
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.HOURS); // Set a long timeout to ensure all tasks finish
+
+        // Stop timer
+        long endTime = System.currentTimeMillis();
+        double totalTimeInSeconds = (endTime - startTime) / 1000.0;
+
+        // Calculate fault coverage
+        int totalFaults = faultList.size();
+        double faultCoverage = (double) detectedFaultsCount.get() / totalFaults;
+
+        // Print simulation results
+        System.out.println("Parallel Simulation Time: " + totalTimeInSeconds + " seconds");
+        System.out.println("Fault Coverage: " + (faultCoverage * 100) + "%");
+        System.out.println("Total Faults: " + totalFaults);
+        System.out.println("Detected Faults: " + detectedFaultsCount.get());
+        System.out.println("Undetectable Faults: " + undetectableFaults.size());
+
+        return faultResults;
+    }
 
     /**
      * Generates all possible test vectors for a given number of inputs.
