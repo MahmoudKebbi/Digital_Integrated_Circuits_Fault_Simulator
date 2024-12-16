@@ -12,6 +12,9 @@ Key features of the Fault Simulator API include:
 - Configurable circuit structures loaded from `.bench` files.
 - API endpoints for user interaction and testing.
 
+> [!NOTE]
+> Source Code: [Digital_Integrated_Circuits_Fault_Simulator at phase-3-fault-simulation](https://github.com/MahmoudKebbi/Digital_Integrated_Circuits_Fault_Simulator/tree/phase-3-fault-simulation)
+
 ---
 ## Usage 
 
