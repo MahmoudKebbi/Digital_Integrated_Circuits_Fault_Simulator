@@ -21,26 +21,21 @@ public class CircuitFaultSimulatorController {
     }
 
     // Endpoint to upload a file
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> simulateCircuit(@RequestParam("file") MultipartFile file) {
         try {
-//            TODO Nothing here just a sample request method
-//            String result = circuitService.parseBenchFile(file);
-            return ResponseEntity.ok("");
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("File is empty. Please upload a valid file.");
+            }
+            // Parse the file and run the simulation
+            String simulationResults = circuitService.runSimulation(file);
+
+            // Return the simulation results as the response
+            return ResponseEntity.ok("Simulation completed successfully. Results:\n" + simulationResults);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the file.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred while running the simulation.");
         }
     }
 
-    // Endpoint to download a processed text file
-    @GetMapping("/download")
-    public ResponseEntity<String> downloadFile() {
-
-//        TODO This is just a sample response
-
-//        byte[] fileContent = circuitService.generateOutputFile();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("H1", "");
-        return new ResponseEntity<>("", headers, HttpStatus.OK);
-    }
 }

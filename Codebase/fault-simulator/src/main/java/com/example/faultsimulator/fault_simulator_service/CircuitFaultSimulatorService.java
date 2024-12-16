@@ -17,6 +17,14 @@ public class CircuitFaultSimulatorService {
     private final CircuitGraph circuitGraph = new CircuitGraph();
 
     /**
+     * Runs full simulation, parses file then runs serial and parallel fault
+     * simulations and gives the results
+     */
+    public String runSimulation(MultipartFile file) {
+        return "";
+    }
+
+    /**
      * Generates a list of stuck-at faults for all connections in the circuit.
      */
     public List<Fault> generateFaultList() {
