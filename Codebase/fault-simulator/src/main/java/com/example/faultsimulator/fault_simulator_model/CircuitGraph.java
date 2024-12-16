@@ -46,12 +46,9 @@ public class CircuitGraph {
     /**
      * Add a connection to the circuit graph, ensuring no duplicate gate IDs.
      */
-    public boolean addCircuitConnection(CircuitConnection connection) {
+    public void addCircuitConnection(CircuitConnection connection) {
         if (!circuitConnections.containsKey(connection.getId())) {
             circuitConnections.put(connection.getId(), connection);
-            return true;
-        } else {
-            return false;
         }
     }
 

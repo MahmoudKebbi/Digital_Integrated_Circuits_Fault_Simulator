@@ -40,7 +40,8 @@ public class CircuitFaultSimulatorService {
         }
 
         circuitGraph.evaluate(inputValues);
-        return circuitGraph.getPrimaryOutputsValues();
+        List<Boolean> test = circuitGraph.getPrimaryOutputsValues();
+        return test;
     }
 
     /**
@@ -118,18 +119,35 @@ public class CircuitFaultSimulatorService {
 
             String gateInfo = parts[1].trim();
             String gateType = gateInfo.substring(0, gateInfo.indexOf('(')).trim();
-            String[] inputIds = gateInfo.substring(gateInfo.indexOf('(') + 1, gateInfo.indexOf(')')).split("\\s*,\\s*");
+            String[] inputIds = gateInfo.substring(gateInfo.indexOf('(') + 1, gateInfo.indexOf(')'))
+                    .split("\\s*,\\s*");
 
             List<CircuitConnection> inputs = new ArrayList<>();
+
             for (String id : inputIds) {
-                CircuitConnection connection = circuitGraph.getCircuitConnections()
-                        .computeIfAbsent(Integer.parseInt(id.trim()), CircuitConnection::new);
-                inputs.add(connection);
+
+                if(circuitGraph.getCircuitConnections().containsKey(Integer.parseInt(id.trim()))){
+                    CircuitConnection temp2= circuitGraph.getCircuitConnections().get(Integer.parseInt(id.trim()));
+                    inputs.add(temp2);
+                }
+                else {
+                    CircuitConnection temp = new CircuitConnection(Integer.parseInt(id.trim()));
+                    circuitGraph.addCircuitConnection(temp);
+                    inputs.add(temp);
+                }
             }
 
-            CircuitConnection output = circuitGraph.getCircuitConnections()
-                    .computeIfAbsent(outputId, CircuitConnection::new);
 
+
+            CircuitConnection output;
+
+            if(circuitGraph.getCircuitConnections().containsKey(outputId)){
+                CircuitConnection temp2= circuitGraph.getCircuitConnections().get(outputId);
+                output = temp2;
+            } else {
+                output = new CircuitConnection(outputId);
+                circuitGraph.addCircuitConnection(output);
+            }
             circuitGraph.addGate(createGate(outputId, gateType, inputs, output));
         } catch (Exception e) {
             System.err.println("Error parsing gate line: " + line);
