@@ -55,35 +55,106 @@ public class CircuitFaultSimulatorService {
     /**
      * Runs fault simulation by injecting faults and comparing results to the fault-free circuit.
      */
-    public Map<String, List<Boolean>> runFaultSimulation(List<Boolean> testVector) throws Exception {
+
+
+    public Map<String, List<Boolean>> runFaultSimulation() throws Exception {
+        // List to store undetectable faults
+        List<Fault> undetectableFaults = new ArrayList<>();
+        int detectedFaultsCount = 0;
+
+        // Generate all possible test vectors
+        int primaryInputSize = circuitGraph.getPrimaryInputs().size();
+        List<List<Boolean>> testVectors = generateAllTestVectors(primaryInputSize);
+
+        // Generate all possible faults
+        List<Fault> faultList = generateFaultList();
+
+        // Map to store results for each fault
         Map<String, List<Boolean>> faultResults = new HashMap<>();
 
-        // Step 1: Evaluate fault-free circuit
-        List<Boolean> goldenOutputs = evaluateFaultFreeCircuit(testVector);
+        // Start timer
+        long startTime = System.currentTimeMillis();
 
-        // Step 2: Inject faults and evaluate for each connection
-        for (CircuitConnection connection : circuitGraph.getCircuitConnections().values()) {
-            for (boolean stuckAtValue : Arrays.asList(true, false)) {
-                // Inject fault
-                connection.setStuck(true, stuckAtValue);
-                System.out.println("Injecting fault at Node: " + connection.getId() + ", Fault Value: " + stuckAtValue);
+        // Iterate over each fault
+        for (Fault fault : faultList) {
+            boolean faultDetected = false;
 
-                // Evaluate circuit with fault
+            // Iterate over all test vectors
+            for (List<Boolean> testVector : testVectors) {
+                // Step 1: Simulate fault-free circuit
+                List<Boolean> faultFreeOutputs = evaluateFaultFreeCircuit(testVector);
+
+                // Step 2: Inject the fault
+                CircuitConnection connection = circuitGraph.getCircuitConnections().get(fault.getNodeId());
+                if (connection != null) {
+                    connection.setStuck(true, fault.getStuckValue());
+                } else {
+                    throw new IllegalArgumentException("Invalid fault node ID: " + fault.getNodeId());
+                }
+
+                // Step 3: Simulate faulty circuit
                 circuitGraph.evaluate(testVector);
                 List<Boolean> faultyOutputs = circuitGraph.getPrimaryOutputsValues();
 
-                // Store results
-                String faultKey = "Node " + connection.getId() + "_StuckAt" + (stuckAtValue ? "1" : "0");
-                faultResults.put(faultKey, new ArrayList<>(faultyOutputs));
+                // Step 4: Compare fault-free and faulty outputs
+                if (!faultFreeOutputs.equals(faultyOutputs)) {
+                    faultDetected = true;
+                    detectedFaultsCount++;
 
-                // Clear fault
+                    // Store the result for this fault
+                    String faultKey = "Node " + fault.getNodeId() + "_StuckAt" + (fault.getStuckValue() ? "1" : "0");
+                    faultResults.put(faultKey, faultyOutputs);
+
+                    break; // Stop testing this fault as it is detected
+                }
+
+                // Clear the fault for the next test
                 connection.setStuck(false, false);
+            }
+
+            // If fault was not detected by any test vector, add it to undetectable faults
+            if (!faultDetected) {
+                undetectableFaults.add(fault);
             }
         }
 
-        // Return fault results
+        // Stop timer
+        long endTime = System.currentTimeMillis();
+        double totalTimeInSeconds = (endTime - startTime) / 1000.0;
+
+        // Calculate fault coverage
+        int totalFaults = faultList.size();
+        double faultCoverage = (double) detectedFaultsCount / totalFaults;
+
+        // Print simulation results
+        System.out.println("Simulation Time: " + totalTimeInSeconds + " seconds");
+        System.out.println("Fault Coverage: " + (faultCoverage * 100) + "%");
+        System.out.println("Total Faults: " + totalFaults);
+        System.out.println("Detected Faults: " + detectedFaultsCount);
+        System.out.println("Undetectable Faults: " + undetectableFaults.size());
+
         return faultResults;
     }
+
+
+    /**
+     * Generates all possible test vectors for a given number of inputs.
+     */
+    private List<List<Boolean>> generateAllTestVectors(int inputSize) {
+        int numVectors = 1 << inputSize; // 2^inputSize
+        List<List<Boolean>> testVectors = new ArrayList<>();
+
+        for (int i = 0; i < numVectors; i++) {
+            List<Boolean> vector = new ArrayList<>();
+            for (int j = inputSize - 1; j >= 0; j--) {
+                vector.add((i & (1 << j)) != 0); // Add true or false based on bit
+            }
+            testVectors.add(vector);
+        }
+
+        return testVectors;
+    }
+
 
     /**
      * Parses the uploaded benchmark file.
