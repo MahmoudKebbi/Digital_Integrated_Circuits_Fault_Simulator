@@ -90,7 +90,11 @@ public class CircuitGraph {
 
         // Set values for primary inputs
         for (int i = 0; i < primaryInputs.size(); i++) {
-            primaryInputs.get(i).setValue(primaryInputValues.get(i));
+
+            if(!primaryInputs.get(i).isStuck()) {
+                primaryInputs.get(i).setValue(primaryInputValues.get(i));
+            }
+
             System.out.println("Input " + primaryInputs.get(i).getId() + " = " + primaryInputs.get(i).getValue());
         }
 

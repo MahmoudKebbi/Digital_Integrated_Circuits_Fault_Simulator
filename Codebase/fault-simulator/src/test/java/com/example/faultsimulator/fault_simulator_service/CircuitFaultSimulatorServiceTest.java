@@ -41,8 +41,8 @@ class CircuitFaultSimulatorServiceTest {
                 INPUT(3)
                 OUTPUT(4)
                 OUTPUT(5)
-                4 = AND(1,2)
-                5 = OR(2,3)
+                4 = AND(1, 2)
+                5 = OR(2, 3)
                 """;
         parseTestFile(testBenchContent);
     }

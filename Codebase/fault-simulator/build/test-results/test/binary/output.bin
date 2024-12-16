@@ -1,2 +1,81 @@
 !Parsing completed successfully.
-!Parsing completed successfully.
+'Connection 1 stuck=false, value=false
+'Connection 2 stuck=false, value=false
+'Connection 3 stuck=false, value=false
+'Connection 4 stuck=false, value=false
+'Connection 5 stuck=false, value=false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+%Connection 1 stuck=true, value=true
+/Injecting fault at Node: 1, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 1 stuck=false, value=false
+&Connection 1 stuck=true, value=false
+0Injecting fault at Node: 1, Fault Value: false
+Input 1 = false
+Input 2 = false
+Input 3 = true
+'Connection 1 stuck=false, value=false
+%Connection 2 stuck=true, value=true
+/Injecting fault at Node: 2, Fault Value: true
+Input 1 = true
+Input 2 = true
+Input 3 = true
+'Connection 2 stuck=false, value=false
+&Connection 2 stuck=true, value=false
+0Injecting fault at Node: 2, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 2 stuck=false, value=false
+%Connection 3 stuck=true, value=true
+/Injecting fault at Node: 3, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 3 stuck=false, value=false
+&Connection 3 stuck=true, value=false
+0Injecting fault at Node: 3, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = false
+'Connection 3 stuck=false, value=false
+%Connection 4 stuck=true, value=true
+/Injecting fault at Node: 4, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 4 stuck=false, value=false
+&Connection 4 stuck=true, value=false
+0Injecting fault at Node: 4, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 4 stuck=false, value=false
+%Connection 5 stuck=true, value=true
+/Injecting fault at Node: 5, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 5 stuck=false, value=false
+&Connection 5 stuck=true, value=false
+0Injecting fault at Node: 5, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+'Connection 5 stuck=false, value=false
+'Connection 1 stuck=false, value=false
+'Connection 2 stuck=false, value=false
+'Connection 3 stuck=false, value=false
+'Connection 4 stuck=false, value=false
+'Connection 5 stuck=false, value=false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Golden Outputs: [false, true]
+/Fault: Node 2_StuckAt1, Outputs: [true, true]
+1Fault: Node 5_StuckAt0, Outputs: [false, false]
+0Fault: Node 2_StuckAt0, Outputs: [false, true]

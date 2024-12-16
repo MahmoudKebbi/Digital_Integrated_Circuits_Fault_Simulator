@@ -13,8 +13,12 @@ public class ORGate extends Gate{
 
     @Override
     public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
-        Boolean result = false;
-        for (CircuitConnection input : inputs) { result=result||input.getValue();}
-        output.setValue(result);
+        if (!output.isStuck()) {
+            Boolean result = false;
+            for (CircuitConnection input : inputs) {
+                result = result || input.getValue();
+            }
+            output.setValue(result);
+        }
     }
 }

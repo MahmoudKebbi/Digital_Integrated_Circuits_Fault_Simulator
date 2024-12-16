@@ -13,6 +13,8 @@ public class NOTGate extends Gate{
 
     @Override
     public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
-        output.setValue(!inputs.get(0).getValue());
+        if (!output.isStuck()) {
+            output.setValue(!inputs.get(0).getValue());
+        }
     }
 }

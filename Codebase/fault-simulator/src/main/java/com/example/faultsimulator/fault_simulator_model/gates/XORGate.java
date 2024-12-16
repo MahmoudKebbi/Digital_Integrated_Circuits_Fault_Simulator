@@ -13,8 +13,12 @@ public class XORGate extends Gate{
 
     @Override
     public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
-        Boolean result = false; // Start with false, as XOR is cumulative
-        for (CircuitConnection input : inputs) {result = result ^ input.getValue();}
-        output.setValue(result);
+        if (!output.isStuck()) {
+            Boolean result = false; // Start with false, as XOR is cumulative
+            for (CircuitConnection input : inputs) {
+                result = result ^ input.getValue();
+            }
+            output.setValue(result);
+        }
     }
 }

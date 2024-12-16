@@ -1,9 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-16T12:30:04" hostname="SAM" time="0.034">
+<testsuite name="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2024-12-16T17:21:45" hostname="SAM" time="370.114">
   <properties/>
-  <testcase name="parseFile()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="0.034"/>
+  <testcase name="testRunFaultSimulation()" classname="com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest" time="370.114">
+    <failure message="org.opentest4j.AssertionFailedError: Fault at Node 2_StuckAt0 did not affect outputs! ==&gt; expected: not equal but was: &lt;[false, true]&gt;" type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: Fault at Node 2_StuckAt0 did not affect outputs! ==&gt; expected: not equal but was: &lt;[false, true]&gt;
+	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at app//org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at app//org.junit.jupiter.api.AssertNotEquals.failEqual(AssertNotEquals.java:277)
+	at app//org.junit.jupiter.api.AssertNotEquals.assertNotEquals(AssertNotEquals.java:263)
+	at app//org.junit.jupiter.api.Assertions.assertNotEquals(Assertions.java:2832)
+	at app//com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest.lambda$testRunFaultSimulation$0(CircuitFaultSimulatorServiceTest.java:148)
+	at java.base@21.0.5/java.util.HashMap.forEach(HashMap.java:1429)
+	at app//com.example.faultsimulator.fault_simulator_service.CircuitFaultSimulatorServiceTest.testRunFaultSimulation(CircuitFaultSimulatorServiceTest.java:146)
+	at java.base@21.0.5/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base@21.0.5/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base@21.0.5/java.util.ArrayList.forEach(ArrayList.java:1596)
+</failure>
+  </testcase>
   <system-out><![CDATA[Parsing completed successfully.
-Parsing completed successfully.
+Connection 1 stuck=false, value=false
+Connection 2 stuck=false, value=false
+Connection 3 stuck=false, value=false
+Connection 4 stuck=false, value=false
+Connection 5 stuck=false, value=false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 1 stuck=true, value=true
+Injecting fault at Node: 1, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 1 stuck=false, value=false
+Connection 1 stuck=true, value=false
+Injecting fault at Node: 1, Fault Value: false
+Input 1 = false
+Input 2 = false
+Input 3 = true
+Connection 1 stuck=false, value=false
+Connection 2 stuck=true, value=true
+Injecting fault at Node: 2, Fault Value: true
+Input 1 = true
+Input 2 = true
+Input 3 = true
+Connection 2 stuck=false, value=false
+Connection 2 stuck=true, value=false
+Injecting fault at Node: 2, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 2 stuck=false, value=false
+Connection 3 stuck=true, value=true
+Injecting fault at Node: 3, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 3 stuck=false, value=false
+Connection 3 stuck=true, value=false
+Injecting fault at Node: 3, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = false
+Connection 3 stuck=false, value=false
+Connection 4 stuck=true, value=true
+Injecting fault at Node: 4, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 4 stuck=false, value=false
+Connection 4 stuck=true, value=false
+Injecting fault at Node: 4, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 4 stuck=false, value=false
+Connection 5 stuck=true, value=true
+Injecting fault at Node: 5, Fault Value: true
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 5 stuck=false, value=false
+Connection 5 stuck=true, value=false
+Injecting fault at Node: 5, Fault Value: false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Connection 5 stuck=false, value=false
+Connection 1 stuck=false, value=false
+Connection 2 stuck=false, value=false
+Connection 3 stuck=false, value=false
+Connection 4 stuck=false, value=false
+Connection 5 stuck=false, value=false
+Input 1 = true
+Input 2 = false
+Input 3 = true
+Golden Outputs: [false, true]
+Fault: Node 2_StuckAt1, Outputs: [true, true]
+Fault: Node 5_StuckAt0, Outputs: [false, false]
+Fault: Node 2_StuckAt0, Outputs: [false, true]
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

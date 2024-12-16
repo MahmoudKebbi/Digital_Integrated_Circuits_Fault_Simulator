@@ -13,8 +13,12 @@ public class NANDGate extends Gate{
 
     @Override
     public void evaluateOutput(List<CircuitConnection> inputs, CircuitConnection output) {
-        Boolean result = true;
-        for (CircuitConnection input : inputs) { result=result&&input.getValue();}
-        output.setValue(!result);
+        if (!output.isStuck()) {
+            Boolean result = true;
+            for (CircuitConnection input : inputs) {
+                result = result && input.getValue();
+            }
+            output.setValue(!result);
+        }
     }
 }
