@@ -1196,3 +1196,6 @@ class FaultSimulatorApplicationTests {
 
 
 ---
+
+# Limitations
+This application is very demanding on memory resources due to the use of multithreading in order to simulate parallel circuit faults. Each thread in the simulation represents a different fault scenario, thus many memory data are implicated in the process of running the simulations. If the number of threads is increased, the total consumption of memory significantly increases. The application also keeps many Java objects-instances of classes like CircuitGraph and Fault-in memory during most of the time the processes last. The resulting memory consumption may easily become a bottleneck when working with large circuits or when performing a large number of fault simulations-which might result in an OutOfMemoryError or visible performance decrease on systems with low available memory.
